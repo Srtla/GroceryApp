@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -36,6 +37,8 @@ public class GroceryList extends AppCompatActivity {
     private String m_Text2 = "";
     ListView listView1;
     ArrayList<String> supplierNames1 = new ArrayList<String>();
+    ArrayList<String> gItems = new ArrayList<String>();
+    ArrayList<Integer> highlightedItem = new ArrayList<Integer>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,15 +62,12 @@ public class GroceryList extends AppCompatActivity {
                 String line;
 
                 while ((line = br.readLine()) != null) {
-                    Log.d("MyTag","Lists Read: "+line);
-                    //text.append(line);
-                    //text.append('\n');
                     supplierNames1.add(line);
                 }
                 br.close();
             }
             catch (IOException e) {
-                //You'll need to add proper error handling here
+                e.printStackTrace();
             }
         }
 
@@ -90,14 +90,14 @@ public class GroceryList extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         viewToHighlight.setBackgroundColor(getColor(R.color.colorHighlight));
+                        highlightedItem.add(positionToRemove);
                     }
                 });
                 builder.setNegativeButton("Delete Item", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d("myTag", String.valueOf(positionToRemove));
+                    public void onClick(DialogInterface dialog, int which) { ;
                         supplierNames1.remove(positionToRemove);
-                        adapter.notifyDataSetChanged();
 
                         for (int i = 0; i < supplierNames1.size(); i++) {
                             try {
@@ -105,13 +105,29 @@ public class GroceryList extends AppCompatActivity {
                                 OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
                                 osw.write(supplierNames1.get(i)+"\n");
-                                //}
                                 osw.flush();
                                 osw.close();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
+
+                        if(highlightedItem.get(0) != 0 && positionToRemove == highlightedItem.get(0)-1){
+                            listView1.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                            listView1.setItemChecked(positionToRemove, true);
+                            viewToHighlight.setBackgroundColor(getColor(R.color.colorHighlight));
+
+                            listView1.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                            listView1.setItemChecked(positionToRemove+1, true);
+                            viewToHighlight.setBackgroundColor(getColor(R.color.restoreHighlight));
+                        }else if(highlightedItem.get(0) == positionToRemove){
+                            listView1.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                            listView1.setItemChecked(highlightedItem.get(0), true);
+                            viewToHighlight.setBackgroundColor(getColor(R.color.restoreHighlight));
+                            highlightedItem.remove(0);
+                        }
+
+                        adapter.notifyDataSetChanged();
                     }
                 });
 
@@ -149,25 +165,30 @@ public class GroceryList extends AppCompatActivity {
                         m_Text1 = input1.getText().toString();
                         m_Text2 = input2.getText().toString();
 
-                        StringBuilder str1 = new StringBuilder();
-                        for(int j=m_Text1.length();j<72-m_Text1.length();j++)
-                        {
-                            str1.append(" ");
-                        }
-                        supplierNames1.add(m_Text1+str1+"| "+m_Text2);
+                        if(gItems.contains(m_Text1.toLowerCase())){
+                            Toast.makeText(GroceryList.this, "Item Already Exists!",
+                                    Toast.LENGTH_LONG).show();
+                        }else {
+                            StringBuilder str1 = new StringBuilder();
+                            gItems.add(m_Text1.toLowerCase());
+                            for (int j = m_Text1.length(); j < 72 - m_Text1.length(); j++) {
+                                str1.append(" ");
+                            }
+                            supplierNames1.add(m_Text1 + str1 + "| " + m_Text2);
 
-                        try {
-                            FileOutputStream fOut = new FileOutputStream(gpxfile,true);
-                            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-                            osw.write(m_Text1+"                                    " +
-                                    "                                    | "+m_Text2+"\n");
-                            osw.flush();
-                            osw.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                            try {
+                                FileOutputStream fOut = new FileOutputStream(gpxfile, true);
+                                OutputStreamWriter osw = new OutputStreamWriter(fOut);
+                                osw.write(m_Text1 + "                                    " +
+                                        "                                    | " + m_Text2 + "\n");
+                                osw.flush();
+                                osw.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                        adapter.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 });
                 builder.show();

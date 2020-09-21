@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,6 +39,7 @@ public class GroceryView extends AppCompatActivity {
     private String m_Text = "";
     ListView listView;
     ArrayList<String> supplierNames = new ArrayList<String>();
+    ArrayList<String> gLists = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,19 +104,25 @@ public class GroceryView extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         m_Text = input.getText().toString();
-                        supplierNames.add(m_Text);
 
-                        try {
-                            FileOutputStream fOut = new FileOutputStream(gpxfile,true);
-                            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-                                osw.write(m_Text+"\n");
-                            osw.flush();
-                            osw.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if(gLists.contains(m_Text.toLowerCase())){
+                            Toast.makeText(GroceryView.this, "List Already Exists!",
+                                    Toast.LENGTH_LONG).show();
+                        }else {
+                            supplierNames.add(m_Text);
+                            gLists.add(m_Text.toLowerCase());
+                            try {
+                                FileOutputStream fOut = new FileOutputStream(gpxfile, true);
+                                OutputStreamWriter osw = new OutputStreamWriter(fOut);
+                                osw.write(m_Text + "\n");
+                                osw.flush();
+                                osw.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            adapter.notifyDataSetChanged();
                         }
-
-                        adapter.notifyDataSetChanged();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
