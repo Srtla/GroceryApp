@@ -2,11 +2,13 @@ package com.example.groceryapp;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -40,6 +42,7 @@ public class GroceryView extends AppCompatActivity {
     ListView listView;
     ArrayList<String> supplierNames = new ArrayList<String>();
     ArrayList<String> gLists = new ArrayList<String>();
+    View viewToHighlight = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +82,11 @@ public class GroceryView extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                viewToHighlight = view;
                 Intent intent = new Intent(GroceryView.this, com.example.groceryapp.GroceryList.class);
                 intent.putExtra("name", supplierNames.get(position));
-                startActivity(intent);
+                startActivityForResult(intent, 1);
+                //startActivity(intent);
             }
         });
 
@@ -134,6 +139,19 @@ public class GroceryView extends AppCompatActivity {
                 builder.show();
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                String value = data.getStringExtra("highlightValue");
+                if(value.matches("1")){
+                    viewToHighlight.setBackgroundColor(getColor(R.color.colorHighlight));
+                }
+            }
+        }
     }
 
     @Override

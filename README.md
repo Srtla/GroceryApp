@@ -108,12 +108,14 @@ file, but we generally split them apart as shown here to keep things organized.
 
 To install and configure project
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1. On a PC or Mac machine, clone the GitHub repository.
-2. Open Android Studio. If it a project is already open, then close that project.
-3. In the Quick Start menu, select Open an existing Android Studio project.
-4. Select the GroceryApp directory you cloned from the GitHub repository.
-5. Click OK.
-6. To run on an emulator,
+1. On a PC or Mac machine, clone the GitHub repository (Code, Download ZIP).
+2. Unzip the download folder
+3. Rename the folder by removing the 'master' in the name
+4. Open Android Studio. If it a project is already open, then close that project.
+5. In the Quick Start menu, select Open an existing Android Studio project.
+6. Select the GroceryApp directory you cloned from the GitHub repository.
+7. Click OK.
+8. To run on an emulator,
     a. In Android Studio, click the Tools menu, select AVD Manager to open the
         Android Virtual Device Manager.
     b. Use the Android Virtual Device Manager to create the Pixel 2 device. Click

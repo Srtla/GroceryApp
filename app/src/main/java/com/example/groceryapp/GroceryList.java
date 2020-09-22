@@ -96,7 +96,7 @@ public class GroceryList extends AppCompatActivity {
                 builder.setNegativeButton("Delete Item", new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
-                    public void onClick(DialogInterface dialog, int which) { ;
+                    public void onClick(DialogInterface dialog, int which) {
                         supplierNames1.remove(positionToRemove);
 
                         for (int i = 0; i < supplierNames1.size(); i++) {
@@ -194,5 +194,20 @@ public class GroceryList extends AppCompatActivity {
                 builder.show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if(highlightedItem.size() == supplierNames1.size()){
+            Intent intent = new Intent();
+            intent.putExtra("highlightValue", "1");
+            setResult(RESULT_OK, intent);
+        }else{
+            Intent intent = new Intent();
+            intent.putExtra("highlightValue", "0");
+            setResult(RESULT_OK, intent);
+        }
+        finish();
     }
 }
